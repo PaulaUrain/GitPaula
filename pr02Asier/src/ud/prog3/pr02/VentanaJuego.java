@@ -3,7 +3,7 @@ package ud.prog3.pr02;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.*;
-
+import java.util.ArrayList;
 import javax.swing.*;
 
 /** Clase principal de minijuego de coche para Práctica 02 - Prog III
@@ -17,7 +17,7 @@ public class VentanaJuego extends JFrame {
 	MundoJuego miMundo;        // Mundo del juego
 	CocheJuego miCoche;        // Coche del juego
 	MiRunnable miHilo = null;  // Hilo del bucle principal de juego	
-
+	ArrayList<Boolean> booleanos;
 	/** Constructor de la ventana de juego. Crea y devuelve la ventana inicializada
 	 * sin coches dentro
 	 */
