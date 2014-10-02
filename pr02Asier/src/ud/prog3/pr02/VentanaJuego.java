@@ -3,7 +3,11 @@ package ud.prog3.pr02;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.*;
-import java.util.ArrayList;
+import java.lang.reflect.Array;
+
+
+
+
 import javax.swing.*;
 
 /** Clase principal de minijuego de coche para Práctica 02 - Prog III
@@ -17,7 +21,7 @@ public class VentanaJuego extends JFrame {
 	MundoJuego miMundo;        // Mundo del juego
 	CocheJuego miCoche;        // Coche del juego
 	MiRunnable miHilo = null;  // Hilo del bucle principal de juego	
-	ArrayList<Boolean> booleanos;
+	Boolean[]teclasbool={false,false,false,false};//up, down,left, right
 	/** Constructor de la ventana de juego. Crea y devuelve la ventana inicializada
 	 * sin coches dentro
 	 */
@@ -69,31 +73,86 @@ public class VentanaJuego extends JFrame {
 				// System.out.println( "Nueva dirección de coche: " + miCoche.getDireccionActual() );
 			}
 		});
-		
-		// Añadido para que también se gestione por teclado con el KeyListener
-		pPrincipal.addKeyListener( new KeyAdapter() {
+		pPrincipal.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				switch (e.getKeyCode()) {
+				case KeyEvent.VK_UP: {
+					teclasbool[0]=false;
+					break;
+					}
+				case KeyEvent.VK_DOWN: {
+					teclasbool[1]=false;
+					break;
+					}
+				case KeyEvent.VK_LEFT: {
+					teclasbool[2]=false;
+					break;
+					}
+				case KeyEvent.VK_RIGHT: {
+					teclasbool[3]=false;
+					break;
+					}
+				}
+			}
+			
 			@Override
 			public void keyPressed(KeyEvent e) {
 				switch (e.getKeyCode()) {
 					case KeyEvent.VK_UP: {
-						miCoche.acelera( +5, 1 );
+						teclasbool[0]=true;
 						break;
 					}
 					case KeyEvent.VK_DOWN: {
-						miCoche.acelera( -5, 1 );
+						teclasbool[1]=true;
 						break;
 					}
 					case KeyEvent.VK_LEFT: {
-						miCoche.gira( +10 );
+						teclasbool[2]=true;
 						break;
 					}
 					case KeyEvent.VK_RIGHT: {
-						miCoche.gira( -10 );
+						teclasbool[3]=true;
 						break;
 					}
 				}
 			}
 		});
+		// Añadido para que también se gestione por teclado con el KeyListener
+		/*pPrincipal.addKeyListener( new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				switch (e.getKeyCode()) {
+					case KeyEvent.VK_UP: {
+						miCoche.acelera( +5, 1 );
+						teclasbool[0]=true;
+						break;
+					}
+					case KeyEvent.VK_DOWN: {
+						miCoche.acelera( -5, 1 );
+						teclasbool[1]=true;
+						break;
+					}
+					case KeyEvent.VK_LEFT: {
+						miCoche.gira( +10 );
+						teclasbool[2]=true;
+						break;
+					}
+					case KeyEvent.VK_RIGHT: {
+						miCoche.gira( -10 );
+						teclasbool[3]=true;
+						break;
+					}
+				}
+			}
+		});*/
 		pPrincipal.setFocusable(true);
 		pPrincipal.requestFocus();
 		pPrincipal.addFocusListener( new FocusAdapter() {
@@ -154,7 +213,25 @@ public class VentanaJuego extends JFrame {
 				if (miMundo.hayChoqueVertical(miCoche)) // Espejo vertical si choca en Y
 					miMundo.rebotaVertical(miCoche);
 				// Dormir el hilo 40 milisegundos
+				if(teclasbool[0]){
+					miMundo.aplicarFuerza(miCoche.fuerzaAceleracionAdelante(), miCoche);
+					//miCoche.acelera( -5, 1 );
+				}//tengo que llamar a aplicarFuerza aunque las teclas no estén pulsadas
+				//porque sino no actua la fuerza de rozamiento
+				else miMundo.aplicarFuerza(0,miCoche);
+				if(teclasbool[1]){
+					miMundo.aplicarFuerza(miCoche.fuerzaAceleracionAtras(), miCoche);
+					//miCoche.acelera( -5, 1 );
+				}
+				else miMundo.aplicarFuerza(0,miCoche);
+				if(teclasbool[2]){
+					miCoche.gira( +10 );
+				}
+				if(teclasbool[3]){
+					miCoche.gira( -10 );
+				}
 				try {
+					System.out.println(miCoche.miVelocidad);
 					Thread.sleep( 40 );
 				} catch (Exception e) {
 				}

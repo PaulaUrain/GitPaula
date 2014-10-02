@@ -9,10 +9,12 @@ package ud.prog3.pr02;
 public class CocheJuego extends Coche {
 	private JLabelCoche miGrafico;  // Etiqueta gráfica del coche
 	
+
 	/**  Crea un nuevo coche de juego
 	 */
 	public CocheJuego() {
 		miGrafico = new JLabelCoche();
+		
 	}
 	
 	/** Devuelve el JLabel gráfico asociado al coche de juego
