@@ -2,8 +2,11 @@ package ud.prog3.pr02;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.*;
 import java.lang.reflect.Array;
+
+
 
 
 
@@ -17,62 +20,38 @@ import javax.swing.*;
  */
 public class VentanaJuego extends JFrame {
 	private static final long serialVersionUID = 1L;  // Para serialización
-	JPanel pPrincipal;         // Panel del juego (layout nulo)
+	JPanel pPrincipal; // Panel del juego (layout nulo)
+	JLabel lMensaje;
 	MundoJuego miMundo;        // Mundo del juego
 	CocheJuego miCoche;        // Coche del juego
 	MiRunnable miHilo = null;  // Hilo del bucle principal de juego	
 	Boolean[]teclasbool={false,false,false,false};//up, down,left, right
+	private int estrellasPilladas=0;
+	private int estrellasIdas=0;
+	private int tope=10;
 	/** Constructor de la ventana de juego. Crea y devuelve la ventana inicializada
 	 * sin coches dentro
 	 */
 	public VentanaJuego() {
+		lMensaje=new JLabel();
+		Font estilo=new Font(Font.SERIF,Font.BOLD,20 );
+		lMensaje.setFont(estilo);
 		// Liberación de la ventana por defecto al cerrar
 		setDefaultCloseOperation( JFrame.DISPOSE_ON_CLOSE );
 		// Creación contenedores y componentes
 		pPrincipal = new JPanel();
-		JPanel pBotonera = new JPanel();
-		JButton bAcelerar = new JButton( "Acelera" );
-		JButton bFrenar = new JButton( "Frena" );
-		JButton bGiraIzq = new JButton( "Gira Izq." );
-		JButton bGiraDer = new JButton( "Gira Der." );
+		JPanel resulta = new JPanel();
 		// Formato y layouts
 		pPrincipal.setLayout( null );
 		pPrincipal.setBackground( Color.white );
 		// Añadido de componentes a contenedores
 		add( pPrincipal, BorderLayout.CENTER );
-		pBotonera.add( bAcelerar );
-		pBotonera.add( bFrenar );
-		pBotonera.add( bGiraIzq );
-		pBotonera.add( bGiraDer );
-		add( pBotonera, BorderLayout.SOUTH );
+		resulta.add(lMensaje);
+		add( resulta, BorderLayout.SOUTH );
 		// Formato de ventana
-		setSize( 1000, 750 );
+		setSize( 1100, 700 );
 		setResizable( false );
 		// Escuchadores de botones
-		bAcelerar.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				miCoche.acelera( +10, 1 );
-				// System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
-			}
-		});
-		bFrenar.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				miCoche.acelera( -10, 1 );
-				// System.out.println( "Nueva velocidad de coche: " + miCoche.getVelocidad() );
-			}
-		});
-		bGiraIzq.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				miCoche.gira( +10 );
-				// System.out.println( "Nueva dirección de coche: " + miCoche.getDireccionActual() );
-			}
-		});
-		bGiraDer.addActionListener( new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				miCoche.gira( -10 );
-				// System.out.println( "Nueva dirección de coche: " + miCoche.getDireccionActual() );
-			}
-		});
 		pPrincipal.addKeyListener(new KeyListener() {
 			
 			@Override
@@ -125,34 +104,6 @@ public class VentanaJuego extends JFrame {
 				}
 			}
 		});
-		// Añadido para que también se gestione por teclado con el KeyListener
-		/*pPrincipal.addKeyListener( new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				switch (e.getKeyCode()) {
-					case KeyEvent.VK_UP: {
-						miCoche.acelera( +5, 1 );
-						teclasbool[0]=true;
-						break;
-					}
-					case KeyEvent.VK_DOWN: {
-						miCoche.acelera( -5, 1 );
-						teclasbool[1]=true;
-						break;
-					}
-					case KeyEvent.VK_LEFT: {
-						miCoche.gira( +10 );
-						teclasbool[2]=true;
-						break;
-					}
-					case KeyEvent.VK_RIGHT: {
-						miCoche.gira( -10 );
-						teclasbool[3]=true;
-						break;
-					}
-				}
-			}
-		});*/
 		pPrincipal.setFocusable(true);
 		pPrincipal.requestFocus();
 		pPrincipal.addFocusListener( new FocusAdapter() {
@@ -201,6 +152,7 @@ public class VentanaJuego extends JFrame {
 	 */
 	class MiRunnable implements Runnable {
 		boolean sigo = true;
+		int mensaje=0;
 		public void run() {
 			// Bucle principal forever hasta que se pare el juego...
 			while (sigo) {
@@ -212,27 +164,48 @@ public class VentanaJuego extends JFrame {
 					miMundo.rebotaHorizontal(miCoche);
 				if (miMundo.hayChoqueVertical(miCoche)) // Espejo vertical si choca en Y
 					miMundo.rebotaVertical(miCoche);
-				// Dormir el hilo 40 milisegundos
 				if(teclasbool[0]){
 					miMundo.aplicarFuerza(miCoche.fuerzaAceleracionAdelante(), miCoche);
 					//miCoche.acelera( -5, 1 );
 				}//tengo que llamar a aplicarFuerza aunque las teclas no estén pulsadas
 				//porque sino no actua la fuerza de rozamiento
-				else miMundo.aplicarFuerza(0,miCoche);
+				if(teclasbool[0]==false&&teclasbool[1]==false){
+				miMundo.aplicarFuerza(0,miCoche);
+				}
 				if(teclasbool[1]){
 					miMundo.aplicarFuerza(miCoche.fuerzaAceleracionAtras(), miCoche);
 					//miCoche.acelera( -5, 1 );
 				}
-				else miMundo.aplicarFuerza(0,miCoche);
 				if(teclasbool[2]){
 					miCoche.gira( +10 );
 				}
 				if(teclasbool[3]){
 					miCoche.gira( -10 );
 				}
+				//utilizo estrella para saber si se ha cogio alguna y así enseñar un mensaje
+				//diferente durante 15 vueltas(15*40 ms); estrellasPilladas se actualiza 
+				//con choquesConEstrella y estrellas idas va guardando cuantas estrellas se han ido
+				int estrellas=estrellasPilladas;
+				estrellasPilladas=estrellasPilladas+miMundo.choquesConEstrellas(miCoche);	
+				estrellasIdas=estrellasIdas+miMundo.quitaYRotaEstrellas(6000);//6seg en ms
+				if(estrellas<estrellasPilladas){
+				mensaje=0;				
+				}else{
+				mensaje=mensaje+1;
+				}
+				if(mensaje<15){
+					lMensaje.setText(" FOLLOW THE STARS!!");
+				}else{
+					lMensaje.setText("PUNTUACION: "+estrellasPilladas*5+" FALTAN : "+(tope-estrellasIdas));
+				}
+				if(estrellasIdas==10){
+					JOptionPane.showMessageDialog(pPrincipal, "Has perdido, PUNTUACION:"+estrellasPilladas*5);
+					if (miHilo!=null) miHilo.acaba();
+				}
 				try {
-					System.out.println(miCoche.miVelocidad);
+					miMundo.creaEstrella();
 					Thread.sleep( 40 );
+					
 				} catch (Exception e) {
 				}
 			}

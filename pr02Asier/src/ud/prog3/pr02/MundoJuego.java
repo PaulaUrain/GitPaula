@@ -1,5 +1,13 @@
 package ud.prog3.pr02;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
+
 import javax.swing.JPanel;
 
 /** "Mundo" del juego del coche.
@@ -11,6 +19,7 @@ import javax.swing.JPanel;
 public class MundoJuego {
 	private JPanel panel;  // panel visual del juego
 	CocheJuego miCoche;    // Coche del juego
+	ArrayList <JLabelEstrella> estrellasMun=new ArrayList <JLabelEstrella>();
 	/** Construye un mundo de juego
 	 * @param panel	Panel visual del juego
 	 */
@@ -28,6 +37,7 @@ public class MundoJuego {
 		miCoche.setPosicion( posX, posY );
 		panel.add( miCoche.getGrafico() );  // Añade al panel visual
 		miCoche.getGrafico().repaint();  // Refresca el dibujado del coche
+		creaEstrella();
 	}
 	
 	/** Devuelve el coche del mundo
@@ -131,5 +141,115 @@ public class MundoJuego {
 		 } else { 
 		 coche.acelera( aceleracion, 0.04 );
 		 }
+	}
+	/** Si han pasado más de 1,2 segundos desde la última,
+	* crea una estrella nueva en una posición aleatoria y la añade al mundo y al panel visual */
+	public void creaEstrella(){
+		if(estrellasMun.size()==0){
+			crear();
+		}
+		else{
+			long tiempoActual=tiempoActual();
+			long ultimaEstrella=estrellasMun.get(estrellasMun.size()-1).getHora().getTime();
+		if((tiempoActual-ultimaEstrella)>1200){//1200 porque long viene en ms y 1,2 s son 1200 ms
+			crear();
+			}
+		}
+	}
+	public void crear(){
+		JLabelEstrella estrella=new JLabelEstrella();
+		estrella.setLocation(crearPosicion());
+		panel.add( estrella);  // Añade al panel visual
+		estrella.repaint();  // Refresca el dibujado de la estrella
+		estrellasMun.add(estrella);//anyade a la lista de estrellas 
+	}
+	public Point crearPosicion(){
+		Random r=new Random();
+		int x=r.nextInt(panel.getWidth()-JLabelEstrella.TAMANYO_ESTRELLA);
+		int y=r.nextInt(panel.getHeight()-JLabelEstrella.TAMANYO_ESTRELLA);
+		Point p=new Point(x,y);
+		return p;
+	}
+	//Para devolver el tiempo actual en ms.
+	public long tiempoActual(){
+		Date fecha=new Date();
+		return fecha.getTime();
+	}
+	/** Quita todas las estrellas que lleven en pantalla demasiado tiempo
+	* y rota 10 grados las que sigan estando
+	* @param maxTiempo Tiempo máximo para que se mantengan las estrellas (msegs)
+	* @return Número de estrellas quitadas */
+	public int quitaYRotaEstrellas( long maxTiempo ){
+		int contEstrellasquitar=0;
+		for(int i=0;i<estrellasMun.size();i++){
+			long tiempoActual=tiempoActual();
+			long tiempoEstrella=estrellasMun.get(i).getHora().getTime();
+			if((tiempoActual-tiempoEstrella)>maxTiempo){
+				quitarEstrellas(i);
+				i--;//porque si no la siguiente estrella se la saltaria al comprobar 
+				//ya que si se elimina la posicion n(i=n), la estrella en n+1 pasa a n
+				//y el contador pasa a i+1
+				contEstrellasquitar++;
+			}
+			else {
+				estrellasMun.get(i).setGiro(10);//para que la estrella gire 10º
+				estrellasMun.get(i).repaint();
+				panel.repaint();
+			}
+		}
+		return contEstrellasquitar;
+	}
+	public void quitarEstrellas(int posicion){
+		panel.remove(estrellasMun.get(posicion));
+		panel.repaint();
+		estrellasMun.remove(posicion);
+	}
+	/** Calcula si hay choques del coche con alguna estrella (o varias). Se considera el choque si
+	* se tocan las esferas lógicas del coche y la estrella. Si es así, las elimina.
+	* @return Número de estrellas eliminadas
+	*/
+	public int choquesConEstrellas(CocheJuego coche){
+		int choqueEstrellas=0;
+		for(int i=0;i<estrellasMun.size();i++){
+			if(hayChoqueEstrella(coche,i)){
+				quitarEstrellas(i);
+				choqueEstrellas++;
+			}
+		}
+		return choqueEstrellas;
+	}
+	/** Calcula si hay choque en horizontal con los límites del mundo
+	 * @param coche	Coche cuyo choque se comprueba con su posición actual
+	 * @return	true si hay choque horizontal, false si no lo hay
+	 */
+	public boolean hayChoqueEstrella( CocheJuego coche,int posicion ) {
+		boolean choque=false;
+		//no cumple que sea justo con los borDes pero es la forma que mejor he encontraDo para que haga su
+		//funcion
+		Rectangle prueba=new Rectangle((int)coche.getPosX(),(int)coche.getPosY(),coche.getGrafico().RADIO_ESFERA_COCHE,coche.getGrafico().RADIO_ESFERA_COCHE);
+		Rectangle prueba2=new Rectangle((int)estrellasMun.get(posicion).getX(),(int)estrellasMun.get(posicion).getY(),estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA,estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA);
+		choque=prueba.intersects(prueba2);
+		
+		/*choque=((coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
+				&&coche.getPosY()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
+				&&coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
+				&&coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				//primer caso posible choque
+				||(coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
+				&&coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
+				&&coche.getPosX()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
+				&&coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA));
+		*/
+		/*choque=((coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				&&(coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				&&(coche.getPosX()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				&&(coche.getPosX()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				&&(coche.getPosY()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				&&(coche.getPosY()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				&&(coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				&&(coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
+				);*/
+		
+		return choque;
 	}
 }
