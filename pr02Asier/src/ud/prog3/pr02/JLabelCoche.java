@@ -1,10 +1,12 @@
 package ud.prog3.pr02;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -32,7 +34,7 @@ public class JLabelCoche extends JLabel {
 		}
 		setBounds( 0, 0, TAMANYO_COCHE, TAMANYO_COCHE );
 		// Esto sería útil cuando hay algún problema con el gráfico: borde de color del JLabel
-		// setBorder( BorderFactory.createLineBorder( Color.yellow, 4 ));
+		//setBorder( BorderFactory.createLineBorder( Color.yellow, 4 ));
 	}
 	
 	// giro

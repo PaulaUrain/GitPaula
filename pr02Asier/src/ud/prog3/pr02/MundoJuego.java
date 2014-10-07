@@ -158,7 +158,10 @@ public class MundoJuego {
 	}
 	public void crear(){
 		JLabelEstrella estrella=new JLabelEstrella();
-		estrella.setLocation(crearPosicion());
+		Point p=crearPosicion();
+		estrella.setPosX(p.x);
+		estrella.setPosY(p.y);
+		estrella.setLocation(p);
 		panel.add( estrella);  // Añade al panel visual
 		estrella.repaint();  // Refresca el dibujado de la estrella
 		estrellasMun.add(estrella);//anyade a la lista de estrellas 
@@ -204,7 +207,9 @@ public class MundoJuego {
 		panel.repaint();
 		estrellasMun.remove(posicion);
 	}
-	/** Calcula si hay choques del coche con alguna estrella (o varias). Se considera el choque si
+	
+	/**PRIMERA FORMA
+	 *  Calcula si hay choques del coche con alguna estrella (o varias). Se considera el choque si
 	* se tocan las esferas lógicas del coche y la estrella. Si es así, las elimina.
 	* @return Número de estrellas eliminadas
 	*/
@@ -226,29 +231,18 @@ public class MundoJuego {
 		boolean choque=false;
 		//no cumple que sea justo con los borDes pero es la forma que mejor he encontraDo para que haga su
 		//funcion
-		Rectangle prueba=new Rectangle((int)coche.getPosX(),(int)coche.getPosY(),coche.getGrafico().RADIO_ESFERA_COCHE,coche.getGrafico().RADIO_ESFERA_COCHE);
-		Rectangle prueba2=new Rectangle((int)estrellasMun.get(posicion).getX(),(int)estrellasMun.get(posicion).getY(),estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA,estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA);
+		/**Rectangle prueba=new Rectangle((int)coche.getPosX(),(int)coche.getPosY(),coche.getGrafico().TAMANYO_COCHE,coche.getGrafico().TAMANYO_COCHE);
+		Rectangle prueba2=new Rectangle((int)estrellasMun.get(posicion).getPosX(),(int)estrellasMun.get(posicion).getPosY(),estrellasMun.get(posicion).TAMANYO_ESTRELLA,estrellasMun.get(posicion).TAMANYO_ESTRELLA);
 		choque=prueba.intersects(prueba2);
-		
-		/*choque=((coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
-				&&coche.getPosY()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
-				&&coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
-				&&coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				//primer caso posible choque
-				||(coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
-				&&coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
-				&&coche.getPosX()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA
-				&&coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA));
-		*/
-		/*choque=((coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				&&(coche.getPosX()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				&&(coche.getPosX()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				&&(coche.getPosX()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getX()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				&&(coche.getPosY()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				&&(coche.getPosY()+coche.getGrafico().RADIO_ESFERA_COCHE>estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				&&(coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				&&(coche.getPosY()-coche.getGrafico().RADIO_ESFERA_COCHE<estrellasMun.get(posicion).getY()-estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA)
-				);*/
+		**/
+		int posXcoche=(int)coche.getPosX()+coche.getGrafico().TAMANYO_COCHE/2;
+		int posYcoche=(int)coche.getPosY()+coche.getGrafico().TAMANYO_COCHE/2;
+		int posXestrella=(int)estrellasMun.get(posicion).getPosX()+(int)estrellasMun.get(posicion).TAMANYO_ESTRELLA/2;
+		int posYestrella=(int)estrellasMun.get(posicion).getPosY()+(int)estrellasMun.get(posicion).TAMANYO_ESTRELLA/2;
+		double catetoX=posXcoche-posXestrella;
+		double catetoY=posYcoche-posYestrella;
+		double distancia=Math.hypot(catetoX, catetoY);
+		choque=(distancia<(coche.getGrafico().RADIO_ESFERA_COCHE+estrellasMun.get(posicion).RADIO_ESFERA_ESTRELLA));
 		
 		return choque;
 	}

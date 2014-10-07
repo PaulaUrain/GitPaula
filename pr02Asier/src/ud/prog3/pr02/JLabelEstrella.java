@@ -1,7 +1,9 @@
 package ud.prog3.pr02;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -16,6 +18,24 @@ public class JLabelEstrella extends JLabel {
 		public static final int RADIO_ESFERA_ESTRELLA = 17;  // Radio en píxels del bounding circle del coche (para choques)
 		private static final boolean DIBUJAR_ESFERA_ESTRELLA = true;  // Dibujado (para depuración) del bounding circle de choque del coche
 		private  Date hora;
+		private int posX=0;
+		private int posY=0;
+		public int getPosX() {
+			return posX;
+		}
+
+		public void setPosX(int posX) {
+			this.posX = posX;
+		}
+
+		public int getPosY() {
+			return posY;
+		}
+
+		public void setPosY(int posY) {
+			this.posY = posY;
+		}
+
 		/** 
 		 */
 		public JLabelEstrella() {
@@ -31,7 +51,7 @@ public class JLabelEstrella extends JLabel {
 			}
 			setBounds( 0, 0, TAMANYO_ESTRELLA, TAMANYO_ESTRELLA);
 			// Esto sería útil cuando hay algún problema con el gráfico: borde de color del JLabel
-			// setBorder( BorderFactory.createLineBorder( Color.yellow, 4 ));
+			// setBorder( BorderFactory.createLineBorder( Color.blue, 4 ));
 		}
 		
 		public  Date getHora() {

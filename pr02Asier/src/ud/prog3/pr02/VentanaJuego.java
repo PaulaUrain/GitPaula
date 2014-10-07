@@ -120,7 +120,6 @@ public class VentanaJuego extends JFrame {
 			}
 		});
 	}
-	
 	/** Programa principal de la ventana de juego
 	 * @param args
 	 */
@@ -134,13 +133,14 @@ public class VentanaJuego extends JFrame {
 				}
 			});
 			miVentana.miMundo = new MundoJuego( miVentana.pPrincipal );
-			miVentana.miMundo.creaCoche( 150, 100 );
+			miVentana.miMundo.creaCoche( 0, 0 );
 			miVentana.miCoche = miVentana.miMundo.getCoche();
 			miVentana.miCoche.setPiloto( "Fernando Alonso" );
 			// Crea el hilo de movimiento del coche y lo lanza
 			miVentana.miHilo = miVentana.new MiRunnable();  // Sintaxis de new para clase interna
 			Thread nuevoHilo = new Thread( miVentana.miHilo );
 			nuevoHilo.start();
+			
 		} catch (Exception e) {
 			System.exit(1);  // Error anormal
 		}
@@ -198,13 +198,13 @@ public class VentanaJuego extends JFrame {
 				}else{
 					lMensaje.setText("PUNTUACION: "+estrellasPilladas*5+" FALTAN : "+(tope-estrellasIdas));
 				}
-				if(estrellasIdas==10){
+				if(estrellasIdas==tope){
 					JOptionPane.showMessageDialog(pPrincipal, "Has perdido, PUNTUACION:"+estrellasPilladas*5);
 					if (miHilo!=null) miHilo.acaba();
 				}
 				try {
 					miMundo.creaEstrella();
-					Thread.sleep( 40 );
+					Thread.sleep(40 );
 					
 				} catch (Exception e) {
 				}
