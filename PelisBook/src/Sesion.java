@@ -8,6 +8,7 @@ public class Sesion extends JFrame {
 	private Usuario usuario;
 	private ArrayList<Foto> fotosVisibles;
 	private ConexionBaseDeDatos a=new ConexionBaseDeDatos();
+	private boolean peticionOamigo=false;
 	public  Sesion(Usuario usuario){
 		this.setUsuario(usuario);
 		//hay que cargar las fotos visibles
@@ -31,10 +32,24 @@ public class Sesion extends JFrame {
 		BaseDeDatos.insertInto(comentario1.insertInto());
 		foto.getComentarios().add(comentario1);
 	}
+	public void peticionEnviadaOAmigo(Usuario amigo){
+		if(a.peticionEnviada(this.usuario.getMail(), amigo.getMail())){
+			peticionOamigo=true;
+		}
+		else{
+			peticionOamigo=false;
+		}
+	}
 	public void pedirAmigo(Usuario amigo){
+		peticionEnviadaOAmigo(amigo);
+		if(peticionOamigo){
+			System.out.println("Los usuarios ya son amigos, o la peticion esta enviada");
+		}else{
+			System.out.println("Has enviado peticion");
 		String insert="insert into amigos values('"+this.getUsuario().getMail()+"', '"+amigo.getMail()+"', '"+false+"', '"
 				+System.currentTimeMillis()+"')";
 		BaseDeDatos.insertInto(insert);
+		}
 	}
 	public void aceptarAmigo(Usuario amigo){
 		String actualizar="update amigos set "+""+ "confirmado ='"+true+"',"+ "fecha ='"+System.currentTimeMillis()+"'"

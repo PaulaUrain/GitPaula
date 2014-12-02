@@ -6,12 +6,27 @@ import java.util.ArrayList;
 public class ConexionBaseDeDatos {
 	public ConexionBaseDeDatos(){	
 	}
-	public boolean existeUsuario(String mailUsuario,String contrasenya){
+	public boolean iniciarSesion(String mailUsuario,String contrasenya){
 		String query="SELECT * FROM usuario ";
 		try {
 			ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
 			while(rs.next()){
 				if((mailUsuario.equals(rs.getString("mail")))&&(contrasenya.equals(rs.getString("contrasenya")))){
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	public boolean existeUsuario(String mailUsuario){
+		String query="SELECT * FROM usuario ";
+		try {
+			ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
+			while(rs.next()){
+				if((mailUsuario.equals(rs.getString("mail")))){
 					return true;
 				}
 			}
@@ -46,11 +61,11 @@ public class ConexionBaseDeDatos {
 	 * y luego se prodece a descargar sus datos*/
 	public ArrayList<Usuario> obtenerAmigos(String mailUsuario){
 	ArrayList listaAmigos=new ArrayList <String>();
-	String query="SELECT * FROM tabla_amigos";
+	String query="SELECT * FROM amigos";
 	try{
 	ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
 	while(rs.next()){
-		if(rs.getString("mail1").equals(mailUsuario)){//nose si usuario1 va encomillado o sin encomillar.
+		if((rs.getString("mail1").equals(mailUsuario))&&(rs.getBoolean("confirmado"))){//nose si usuario1 va encomillado o sin encomillar.
 			String mailAmigo=rs.getString("mail1");
 			//Una vez localizado la tupla en la que tenga un amigo, procedemos a descargar los datos del amigo para guardarlo en la lista de amigos
 			// de usuario, para ello buscamos en la base de datos de usuarios los datos del amigo mediante el mail.
@@ -59,7 +74,7 @@ public class ConexionBaseDeDatos {
 			Usuario amigo=new Usuario(rsp.getString("nombre"),rsp.getString("apellido"),rsp.getString("mail"));
 			listaAmigos.add(amigo);
 		}
-		else if(rs.getString("mail2").equals(mailUsuario)){
+		else if((rs.getString("mail2").equals(mailUsuario))&&(rs.getBoolean("confirmado"))){
 			String mailAmigo=rs.getString("mail2");
 			//Una vez localizado la tupla en la que tenga un amigo, procedemos a descargar los datos del amigo para guardarlo en la lista de amigos
 			// de usuario, para ello buscamos en la base de datos de usuarios los datos del amigo mediante el mail.
@@ -152,6 +167,25 @@ public class ConexionBaseDeDatos {
 			e.printStackTrace();
 		}
 		return null;	
-	}	
+	}
+	public boolean peticionEnviada(String mail1,String mail2){
+		String query="SELECT * FROM amigos";
+		try{
+		ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
+		while(rs.next()){
+			if((rs.getString("mail1").equals(mail1))&&(rs.getString("mail2").equals(mail2))){//nose si usuario1 va encomillado o sin encomillar.
+				return true;
+				}
+			if((rs.getString("mail2").equals(mail1))&&(rs.getString("mail1").equals(mail2))){//nose si usuario1 va encomillado o sin encomillar.
+				return true;
+				}
+		}
+		}catch(Exception e){
+		}
+		return false;
+	}
 }
+
+
+			
 

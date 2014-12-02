@@ -5,7 +5,14 @@ public class InicioPrograma {
 		System.out.println(BaseDeDatos.initBD("pb.bd"));
 		BaseDeDatos.crearTablaBD();
 		ConexionBaseDeDatos a=new ConexionBaseDeDatos();
-		if(a.existeUsuario("asierrodri","ara")){	
+		Inicio inicio=new Inicio();
+		Sesion sesion=inicio.iniciarSesion("asierrodri", "ara");
+		inicio.registrarNuevoUsuario("Asier","Rod","asierrodri","pepe");
+		sesion.pedirAmigo(a.usuarioSesion("paulaue"));
+	}
+}
+	/*	if(a.iniciarSesion("asierrodri","ara")){	
+			
 			System.out.println(true);
 			//amistad
 		//	Sesion sesion= new Sesion(a.usuarioSesion("asierrodri"));
@@ -33,8 +40,5 @@ public class InicioPrograma {
 		BaseDeDatos.insertInto(usuario3.insertInto());
 		BaseDeDatos.close();*/
 		
-		
-	}
-}
 
 
