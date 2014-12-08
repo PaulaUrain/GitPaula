@@ -1,8 +1,10 @@
 package logicaPrograma;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+
 import javax.swing.SwingUtilities;
 
+import parteGUI.DatosErroneos;
 import parteGUI.VentanaInicio;
 
 public class InicioPrograma {

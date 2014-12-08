@@ -13,6 +13,7 @@ public class ConexionBaseDeDatos {
 		try {
 			ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
 			while(rs.next()){
+				System.out.println(rs.getString("mail")+mailUsuario);
 				if((mailUsuario.equals(rs.getString("mail")))&&(contrasenya.equals(rs.getString("contrasenya")))){
 					return true;
 				}
