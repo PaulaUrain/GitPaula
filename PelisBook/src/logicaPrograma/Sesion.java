@@ -1,16 +1,15 @@
-import java.util.ArrayList;
+package logicaPrograma;
 import java.util.HashSet;
 
-import javax.swing.JFrame;
-
-
-public class Sesion extends JFrame {
+public class Sesion {
 	private Usuario usuario;
-	private ArrayList<Foto> fotosVisibles;
+	//private ArrayList<Foto> fotosVisibles;
 	private ConexionBaseDeDatos a=new ConexionBaseDeDatos();
 	private boolean peticionOamigo=false;
 	public  Sesion(Usuario usuario){
 		this.setUsuario(usuario);
+		usuario.setIntentos((a.obtenerIntentosFotos(usuario)));
+		usuario.setAmigos(a.obtenerAmigos(usuario.getMail()));
 		//hay que cargar las fotos visibles
 		usuario.setFotos(a.obtenerFotos(usuario.getMail()));
 	}
@@ -68,5 +67,49 @@ public class Sesion extends JFrame {
 	}
 	public void setUsuario(Usuario usuario) {
 		this.usuario = usuario;
+	}
+	//true es si ha adivinado el título, y false si no. Hacer excepcion por si la foto ya está adivinada
+	public boolean adivinarFoto(Foto foto, String tituloUsuario){
+		boolean acertada=false;
+		boolean aparece=false;
+		int posicionArrayFoto=0;
+		for(int i=0;i<usuario.getIntentos().size();i++){
+			if(usuario.getIntentos().get(i).getFoto().getPath().equals(foto.getPath())){
+				acertada=usuario.getIntentos().get(i).isAdivinado();
+				posicionArrayFoto=i;
+				aparece=true;
+			}
+		}
+		if(!acertada){
+			if(foto.getTituloFoto().equals(tituloUsuario)){
+				if(aparece){
+				usuario.getIntentos().get(posicionArrayFoto).setNumIntento(usuario.getIntentos().get(posicionArrayFoto).getNumIntento()+1);
+				IntentoFoto nuevo=new IntentoFoto(usuario,foto,System.currentTimeMillis(),true,usuario.getIntentos().get(posicionArrayFoto).getNumIntento());
+				usuario.getIntentos().get(posicionArrayFoto).setAdivinado(true);
+				BaseDeDatos.insertInto(nuevo.insertInto());
+				}else{
+				IntentoFoto nuevo=new IntentoFoto(usuario,foto,System.currentTimeMillis(),true,1);
+				usuario.getIntentos().add(nuevo);	
+				BaseDeDatos.insertInto(nuevo.insertInto());	
+				}
+				return true;
+			}else{
+				if(aparece){
+					usuario.getIntentos().get(posicionArrayFoto).setNumIntento(usuario.getIntentos().get(posicionArrayFoto).getNumIntento()+1);
+					IntentoFoto nuevo=new IntentoFoto(usuario,foto,System.currentTimeMillis(),false,usuario.getIntentos().get(posicionArrayFoto).getNumIntento());
+					usuario.getIntentos().get(posicionArrayFoto).setAdivinado(false);
+					BaseDeDatos.insertInto(nuevo.insertInto());
+					}else{
+					IntentoFoto nuevo=new IntentoFoto(usuario,foto,System.currentTimeMillis(),false,1);
+					usuario.getIntentos().add(nuevo);	
+					BaseDeDatos.insertInto(nuevo.insertInto());	
+					}
+				return false;
+			}
+		}else{
+			//saltar la excepcion, porque ya está acertada
+		return false;
+		}
+	
 	}
 }

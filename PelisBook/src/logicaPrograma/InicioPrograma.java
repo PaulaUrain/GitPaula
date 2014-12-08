@@ -1,14 +1,34 @@
+package logicaPrograma;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import javax.swing.SwingUtilities;
+
+import parteGUI.VentanaInicio;
 
 public class InicioPrograma {
 	public static void main(String[] args) {
 		System.out.println(BaseDeDatos.initBD("pb.bd"));
 		BaseDeDatos.crearTablaBD();
 		ConexionBaseDeDatos a=new ConexionBaseDeDatos();
-		Inicio inicio=new Inicio();
-		Sesion sesion=inicio.iniciarSesion("asierrodri", "ara");
+		final VentanaInicio inicio = new VentanaInicio();
+		try {
+			SwingUtilities.invokeAndWait( new Runnable() {
+				@Override
+				public void run() {
+					inicio.setVisible( true );
+				}
+			});
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		/*Inicio inicio=Inicio();
+		 * Sesion sesion=inicio.iniciarSesion("asierrodri", "ara");
 		inicio.registrarNuevoUsuario("Asier","Rod","asierrodri","pepe");
-		sesion.pedirAmigo(a.usuarioSesion("paulaue"));
+		sesion.pedirAmigo(a.usuarioSesion("paulaue"));*/
 	}
 }
 	/*	if(a.iniciarSesion("asierrodri","ara")){	

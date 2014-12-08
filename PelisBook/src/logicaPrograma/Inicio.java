@@ -1,7 +1,8 @@
+package logicaPrograma;
 import javax.swing.JFrame;
 
 
-public class Inicio extends JFrame {
+public class Inicio{
 	ConexionBaseDeDatos a =new ConexionBaseDeDatos();
 	//tendrá JTEXT para el mail y usuario y un botón para registrar a un nuevo usuario.
 	public Inicio(){

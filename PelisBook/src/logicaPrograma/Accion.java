@@ -1,3 +1,4 @@
+package logicaPrograma;
 public abstract class Accion {
 	private Usuario usuario;
 	private Foto foto;

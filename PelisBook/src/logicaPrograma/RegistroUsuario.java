@@ -1,3 +1,4 @@
+package logicaPrograma;
 import javax.swing.JFrame;
 
 public class RegistroUsuario extends JFrame {
