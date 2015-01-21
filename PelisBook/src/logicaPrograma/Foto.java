@@ -1,3 +1,4 @@
+package logicaPrograma;
 import java.util.ArrayList;
 
 
@@ -17,7 +18,7 @@ public class Foto {
 	private int numeroPersonasAdivinadas=0;
 	private ArrayList <Comentario>comentarios= new ArrayList<Comentario>();
 	public Foto(String tituloFoto,String [] palabrasProhibidas,String path,String emailUsuario, long fecha){
-		this.tituloFoto=tituloFoto;
+		this.setTituloFoto(tituloFoto);
 		for(int i=0;i<numeroPalabrasProhibidas;i++){
 			this.getPalabrasProhibidas()[i]=palabrasProhibidas[i];
 		}
@@ -26,7 +27,7 @@ public class Foto {
 		this.fecha=fecha;
 	}
 	public Foto(String tituloFoto,String path,String emailUsuario, long fecha){
-		this.tituloFoto=tituloFoto;
+		this.setTituloFoto(tituloFoto);
 		this.path=path;
 		this.emailUsuario=emailUsuario;
 		this.fecha=fecha;
@@ -50,7 +51,7 @@ public class Foto {
 		this.numeroPersonasAdivinadas = numeroPersonasAdivinadas;
 	}
 	public String insertInto(){
-		String insert="insert into foto values('"+this.tituloFoto+"', '"+getPalabrasProhibidas()[0]+"', '"+getPalabrasProhibidas()[1]+"', '"+
+		String insert="insert into foto values('"+this.getTituloFoto()+"', '"+getPalabrasProhibidas()[0]+"', '"+getPalabrasProhibidas()[1]+"', '"+
 				getPalabrasProhibidas()[2]+"', '"+getPalabrasProhibidas()[3]+"', '"+getPalabrasProhibidas()[4]+"', '"+getPalabrasProhibidas()[5]+"'"
 						+ ", '"+getPalabrasProhibidas()[6]+"', '"+getPalabrasProhibidas()[7]+"', '"+getPalabrasProhibidas()[8]+"'"
 								+ ", '"+getPalabrasProhibidas()[9]+"', '"+this.path+"', '"+this.emailUsuario+"', '"+0+"',"
@@ -68,6 +69,12 @@ public class Foto {
 	}
 	public void setComentarios(ArrayList <Comentario> comentarios) {
 		this.comentarios = comentarios;
+	}
+	public String getTituloFoto() {
+		return tituloFoto;
+	}
+	public void setTituloFoto(String tituloFoto) {
+		this.tituloFoto = tituloFoto;
 	}
 	
 }

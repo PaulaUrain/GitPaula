@@ -1,3 +1,4 @@
+package logicaPrograma;
 public class Comentario extends Accion{
 	String comentarioFoto=" ";
 	public Comentario(String comentarioFoto,Foto foto, Usuario usuario, long tiempo){

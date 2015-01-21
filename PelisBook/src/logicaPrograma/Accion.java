@@ -1,5 +1,5 @@
+package logicaPrograma;
 public abstract class Accion {
-	//Asier
 	private Usuario usuario;
 	private Foto foto;
 	private long tiempo;

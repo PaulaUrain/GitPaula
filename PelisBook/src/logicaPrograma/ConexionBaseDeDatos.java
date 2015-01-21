@@ -1,6 +1,8 @@
+package logicaPrograma;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 
 public class ConexionBaseDeDatos {
@@ -11,6 +13,7 @@ public class ConexionBaseDeDatos {
 		try {
 			ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
 			while(rs.next()){
+				System.out.println(rs.getString("mail")+mailUsuario);
 				if((mailUsuario.equals(rs.getString("mail")))&&(contrasenya.equals(rs.getString("contrasenya")))){
 					return true;
 				}
@@ -110,21 +113,31 @@ public class ConexionBaseDeDatos {
 		}
 		return listaComentarios;
 	}
-	//SIN TERMINAR!!
 	public ArrayList <IntentoFoto> obtenerIntentosFotos(Usuario usuario){
-		ArrayList listaIntentos=new ArrayList<Accion>();
+		ArrayList<IntentoFoto> listaIntentos=new ArrayList<IntentoFoto>();
+		HashSet<String> fotosDistintas=new HashSet<String>();
 		String query="SELECT * FROM adivinar";
 		try{
 		ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
 		while(rs.next()){
 			if(rs.getString("mail").equals(usuario.getMail())){
 				//para guardar foto
-				String queryParcial="SELECT * FROM Foto WHERE pathFoto== '"+rs.getString("pathFoto")+"'";
-				ResultSet rsp=BaseDeDatos.getStatement().executeQuery(queryParcial);
 				Foto foto=devFotoSin(rs.getString("pathFoto"));
+				IntentoFoto nuevoIntento=new IntentoFoto(usuario,foto, rs.getLong("fecha"),rs.getBoolean("adivinado"),rs.getInt("numeroIntento"));
 				//hAY QUE METER LOS dATOS dE LA TABLA AdIVINAR EN EL ORdEN QUE PONGAMOS EN EL CONSTRUCTOR dE LA CLASE INTENTOAdIVINAR);
-				Accion nuevoIntento=new IntentoFoto(usuario, foto, System.currentTimeMillis(),rs.getBoolean("adivinado"));
-				listaIntentos.add(nuevoIntento);
+				if(fotosDistintas.contains(foto.getPath())){
+					for(int i=0;i<listaIntentos.size();i++){
+					if(foto.getPath().equals(listaIntentos.get(i).getFoto().getPath())){
+						if(rs.getLong("fecha")>listaIntentos.get(i).getTiempo()){
+						listaIntentos.set(i,nuevoIntento);
+							}
+						}
+					}
+				}else {
+					listaIntentos.add(nuevoIntento);
+					fotosDistintas.add(nuevoIntento.getFoto().getPath());
+					
+				}
 			}
 		}
 		return listaIntentos;}catch (SQLException e) {

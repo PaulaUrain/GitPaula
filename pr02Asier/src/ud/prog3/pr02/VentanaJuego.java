@@ -140,7 +140,6 @@ public class VentanaJuego extends JFrame {
 			miVentana.miHilo = miVentana.new MiRunnable();  // Sintaxis de new para clase interna
 			Thread nuevoHilo = new Thread( miVentana.miHilo );
 			nuevoHilo.start();
-			
 		} catch (Exception e) {
 			System.exit(1);  // Error anormal
 		}

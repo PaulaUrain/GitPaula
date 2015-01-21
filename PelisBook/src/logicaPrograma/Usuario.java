@@ -1,3 +1,4 @@
+package logicaPrograma;
 import java.util.ArrayList;
 
 
@@ -131,6 +132,12 @@ private ArrayList <IntentoFoto> intentos=new ArrayList<IntentoFoto>();
 	}
 	public void setFotos(ArrayList <Foto> fotos) {
 		this.fotos = fotos;
+	}
+	public ArrayList <IntentoFoto> getIntentos() {
+		return intentos;
+	}
+	public void setIntentos(ArrayList <IntentoFoto> intentos) {
+		this.intentos = intentos;
 	}
 }
 
