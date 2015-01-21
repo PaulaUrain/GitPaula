@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
-
+/**
+ * Sirve de puente entre el programa y la base de datos, permite sacar lo que guardamos en ella
+ *
+ */
 public class ConexionBaseDeDatos {
 	public ConexionBaseDeDatos(){	
 	}
+	//para inciar sesion comprobamos que el mail introducido y la contrasenya son los que aparecen en la base de datos
 	public boolean iniciarSesion(String mailUsuario,String contrasenya){
 		String query="SELECT * FROM usuario ";
 		try {
@@ -24,6 +28,7 @@ public class ConexionBaseDeDatos {
 		}
 		return false;
 	}
+	//en el registro, comprobamos si el mail que introducimos ya esta cogido por un usuario
 	public boolean existeUsuario(String mailUsuario){
 		String query="SELECT * FROM usuario ";
 		try {
@@ -39,6 +44,7 @@ public class ConexionBaseDeDatos {
 		}
 		return false;
 	}
+	//para obtener el usuario de una sesion, recuperamos todos sus datos
 	public Usuario usuarioSesion(String mail){
 		String query="SELECT * FROM usuario ";
 		try {
@@ -60,6 +66,7 @@ public class ConexionBaseDeDatos {
 		}
 		return null;	
 	}
+	//recuperamos los amigos de un usuario recuperamos el amigo usuario
 	public ArrayList<Usuario> usuarioParaAmigos(String mail){
 		ArrayList<Usuario> listaAmigos=new ArrayList <Usuario>();
 		String query="SELECT * FROM usuario ";
@@ -114,6 +121,7 @@ public class ConexionBaseDeDatos {
 			e.printStackTrace();
 		}return listaAmigos;
 	}
+	//obtenemos un usuario pero sin la contrasenya
 	public Usuario usuarioParcial(String mail){
 		String query="SELECT * FROM usuario ";
 		try {
@@ -135,6 +143,7 @@ public class ConexionBaseDeDatos {
 		}
 		return null;	
 	}
+	//ppara obtener los comentarios de una foto, hay que hacerlo por pasos para que no casque el result set
 	public ArrayList<Comentario> obtenerComentariosFoto(Foto foto){
 		ArrayList<Comentario> listaComentarios=new ArrayList<Comentario>();
 		ArrayList<String>comentario=new ArrayList<String>();
@@ -144,10 +153,13 @@ public class ConexionBaseDeDatos {
 		String query="SELECT * FROM registro_comentario where (pathFoto='"+foto.getPath()+"')";
 		ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
 		while(rs.next()){
+			//primero rellenamos los arrays
 				comentario.add(rs.getString("comentario"));
 				fecha.add(rs.getLong("fecha"));
 				mail.add(rs.getString("mail"));
 			}
+		//una vez hemos conseguido la infor completa de la base de datos, para obtener el usuario
+		//volvemos a requerir de la base de datos y por eso utilizamos el metodo usuarioParcial
 		for(int i=0;i<mail.size();i++){
 			listaComentarios.add(new Comentario(comentario.get(i),foto,usuarioParcial(mail.get(i)),fecha.get(i)));
 		}
@@ -157,7 +169,7 @@ public class ConexionBaseDeDatos {
 		}
 		return listaComentarios;
 	}
-	
+	//parecido al anterior, epro sirve para saber los intentos que ha hecho una persona sobre una foto
 	public ArrayList <IntentoFoto> obtenerIntentosFotos(Usuario usuario){
 		ArrayList<IntentoFoto> listaIntentos=new ArrayList<IntentoFoto>();
 		HashSet<String> fotosDistintas=new HashSet<String>();
@@ -168,13 +180,13 @@ public class ConexionBaseDeDatos {
 		String query="SELECT * FROM adivinar";
 		try{
 		ResultSet rs=BaseDeDatos.getStatement().executeQuery(query);
-		while(rs.next()){
+		while(rs.next()){		
 			if(rs.getString("mail").equals(usuario.getMail())){
-				//IntentoFoto nuevoIntento=new IntentoFoto(usuario,foto,rs.getLong("fecha"),acertar,rs.getInt("numeroIntento"));
-				//hAY QUE METER LOS dATOS dE LA TABLA AdIVINAR EN EL ORdEN QUE PONGAMOS EN EL CONSTRUCTOR dE LA CLASE INTENTOAdIVINAR);
+				//comprobamos que la foto ya esta en el hashset, si esta actualizamos los intentos
 				if(fotosDistintas.contains(rs.getString("pathFoto"))){
 					for(int i=0;i<listaIntentos.size();i++){
 					if(rs.getString("pathFoto").equals(fotos.get(i))){
+						//actualizamos con los intentos que aparezcan en la ultima entrada
 						if(rs.getLong("fecha")>fecha.get(i)){
 						fecha.set(i, rs.getLong("fecha"));
 						acertar.set(i,rs.getString("adivinado").equals("true"));
@@ -183,6 +195,7 @@ public class ConexionBaseDeDatos {
 						}
 					}
 				}else {
+					//si no esta, anyadimos al hashset la foto y al array los datos
 					fotosDistintas.add(rs.getString("pathFoto"));
 					fotos.add(rs.getString("pathFoto"));
 					fecha.add(rs.getLong("fecha"));
@@ -191,6 +204,7 @@ public class ConexionBaseDeDatos {
 				}
 			}
 		}
+		//una vez mas en dos pasos, aqui hemos llamado al metodo devFotoSin para obtener la foto
 		for (int i=0;i<fotos.size();i++){
 			listaIntentos.add(new IntentoFoto(usuario,devFotoSin(fotos.get(i)),fecha.get(i),acertar.get(i),numeroIntento.get(i)));
 		}
@@ -200,6 +214,7 @@ public class ConexionBaseDeDatos {
 		}
 		return listaIntentos;
 	}
+	//devuelve una foto, le mandamos el path y la busca
 	public Foto devFotoSin(String pathFoto){
 		String queryParcial="SELECT * FROM foto WHERE path= '"+pathFoto+"'";
 		ResultSet rsp;
@@ -213,7 +228,7 @@ public class ConexionBaseDeDatos {
 		}
 		return null;
 	}
-	//sacar fotos para un Usuario
+	//sacar fotos de un Usuario
 	public ArrayList<Foto> obtenerFotos(String mail){
 		ArrayList<Foto> fotos=new ArrayList<Foto>();
 		String query="SELECT * FROM foto";
@@ -226,10 +241,11 @@ public class ConexionBaseDeDatos {
 					palabrasProhibidas[i-1]=rs.getString("palabraP"+i);
 				}
 				Foto foto=new Foto(rs.getString("titulo"),palabrasProhibidas,rs.getString("path"),mail,rs.getLong("fecha"),rs.getInt("numeroPersonasAdivinadas"));
-				//hAY QUE METER LOS dATOS dE LA TABLA AdIVINAR EN EL ORdEN QUE PONGAMOS EN EL CONSTRUCTOR dE LA CLASE INTENTOAdIVINAR);
 				fotos.add(foto);
 			}
 		}
+		//para poder sacar los comentarios tambien en dos partes, arriba hemos sacado la foto en general
+		//aqui volvemos a llamar a la base de datos para obtener los comentarios de esa foto
 		for(int i=0;i<fotos.size();i++){
 			fotos.get(i).setComentarios(obtenerComentariosFoto(fotos.get(i)));
 		}
@@ -239,6 +255,7 @@ public class ConexionBaseDeDatos {
 		}
 		return null;	
 	}
+	//comprueba si dos amigos aparecen en la tabla de amigos
 	public boolean peticionEnviada(String mail1,String mail2){
 		String query="SELECT * FROM amigos";
 		try{
@@ -255,6 +272,7 @@ public class ConexionBaseDeDatos {
 		}
 		return false;
 	}
+	//devuelve un array con el numero de filas de este usuario que tienen la columna de confirmado a false
 	public ArrayList<String> numeroPeticiones(String mailUsuario){
 		ArrayList<String> listaAmigos=new ArrayList <String>();
 		String query="SELECT * FROM amigos";

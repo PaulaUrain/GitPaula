@@ -36,6 +36,7 @@ public class VentanaFoto extends JFrame {
 	private JLabel puntuacion;
 	private DefaultListModel<String>comentarios=new DefaultListModel<String>();
 	private JList<String> listaComentarios=new JList<String>(comentarios);
+	//panel para los comentarios de la foto, es un scroll
 	private JScrollPane panelC;
 	
 	public VentanaFoto(Foto foto,Sesion sesion)throws NullPointerException{
@@ -45,6 +46,7 @@ public class VentanaFoto extends JFrame {
 		setVisible(true);
 		setSize(900,800);
 		panelC.setVerticalScrollBarPolicy(panelC.VERTICAL_SCROLLBAR_ALWAYS);
+		//anyadimos los comentarios del array de comentarios que tiene la foto
 		for(int i=0;i<foto.getComentarios().size();i++){
 			comentarios.addElement(foto.getComentarios().get(i).comentarioFoto);
 		}
@@ -78,7 +80,7 @@ public class VentanaFoto extends JFrame {
 		puntuacion.setBackground(new Color(28,255,10));
 		getContentPane().setBackground(new Color(28,255,10));
 		arriba.setBackground(new Color(28,255,10));
-		
+		//boton para indicar que lo escrito en el textfield es para acertar, si se acierta se refresca la pantalla
 		acertar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -88,6 +90,7 @@ public class VentanaFoto extends JFrame {
 				repaint();
 			}
 		});
+		//igual que el de acertar pero con el comentario
 		comentar.addActionListener(new ActionListener() {
 			
 			@Override

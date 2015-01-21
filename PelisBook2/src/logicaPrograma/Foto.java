@@ -70,6 +70,7 @@ public class Foto {
 	public void setTituloFoto(String tituloFoto) {
 		this.tituloFoto = tituloFoto;
 	}
+	//metodo para actualizar el numero de personas que han acertado una foto, cuando alguien acierta +1
 	public String sumarAcierto(){
 		this.numeroPersonasAdivinadas++;
 		String sentencia="update foto set numeroPersonasAdivinadas='"+numeroPersonasAdivinadas+"'"+

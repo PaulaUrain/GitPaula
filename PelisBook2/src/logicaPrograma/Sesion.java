@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import javax.imageio.ImageIO;
-
+/*
+ * Sesion de un usuario
+ * a= conexion con la base de datos
+ */
 public class Sesion {
 	private Usuario usuario;
 	//private ArrayList<Foto> fotosVisibles;
@@ -23,12 +26,15 @@ public class Sesion {
 		//cargar las fotos que ha subido el propio usuario
 		usuario.setFotos(a.obtenerFotos(usuario.getMail()));
 		recuperarPeticiones();
-		//para recuperar ftos visibles en el timeline
+		//para recuperar fotos visibles en el timeline
 		recuperarFotos();
 	}
+	//recorre la base de datos llamando a conexion base de datos para sacar la lista de peticiones recibidas
 	public void recuperarPeticiones(){
+		//primero vaciamos las que hay y volvemos a llenarla despues
 		getPeticionesPen().clear();
 		ArrayList<String>mails=new ArrayList<String>();
+		//lo hacemos en dos pasos primero sacamos los mails de los amigos, despues buscamos el usuario de esos mails
 		mails=a.numeroPeticiones(usuario.getMail());
 		for(int i=0;i<mails.size();i++){
 			getPeticionesPen().add(a.usuarioParcial(mails.get(i)));
@@ -40,15 +46,18 @@ public class Sesion {
 	 */
 	public void recuperarFotos(){
 		fotosAmigos.clear();
+		//dos pasos, primero obtenemos todas las fotos de un amigo (en el array parcial)
+		//despues anyadimos esas fotos al array de las fotos de los amigos
 		for(int i=0;i<usuario.getAmigos().size();i++){
 			ArrayList<Foto>arrayParcial=a.obtenerFotos(usuario.getAmigos().get(i).getMail());		
 			for(int o=0;o<arrayParcial.size();o++){
 				fotosAmigos.add(arrayParcial.get(o));
 			}
 		}
+		//ordenamos de mas nueva a mas vieja
 		fotosAmigos=ordenarListaFecha(fotosAmigos);
 	}
-	//ordena las fotos de más nuevo a más antiguo.
+	//ordena las fotos de más nuevo a más antiguo.(mergesort)
 	public ArrayList<Foto> ordenarListaFecha(ArrayList<Foto> lista){
 		if(lista.size()<2){
 			return lista;
@@ -102,12 +111,14 @@ public class Sesion {
 		}
 		return or;
 	}
-	//VAMOS A HACER CON EXCEPCIONES!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//metodo para comentar una foto, se comprueba que el comentario no contenga ninguna de las palabras prohibidas
+	//si hay alguna no deja comentar
 	public String comentar(String comentario,Foto foto){
 		HashSet <String> a=new HashSet<String>();
 		for (int i=0;i<foto.getPalabrasProhibidas().length;i++){
 			a.add(foto.getPalabrasProhibidas()[i]);
 		}
+		//separamos el comentario en palabras
 		String coment[] = comentario.split(" ");
 		for(String palabra : coment){
 			if(a.contains(palabra)){
@@ -121,6 +132,7 @@ public class Sesion {
 		foto.getComentarios().add(comentario1);
 		return "Gracias por comentar";
 	}
+	//comprobamos en la base de datos si los usuarios ya son amigos, o si ya se ha enviado la peticion
 	public void peticionEnviadaOAmigo(Usuario amigo){
 		if(a.peticionEnviada(this.usuario.getMail(), amigo.getMail())){
 			peticionOamigo=true;
@@ -129,30 +141,35 @@ public class Sesion {
 			peticionOamigo=false;
 		}
 	}
+	//metodo para enviar peticion
 	public String pedirAmigo(Usuario amigo){
+		//comprobamos
 		peticionEnviadaOAmigo(amigo);
 		if(peticionOamigo){
 			return "Los usuarios ya son amigos, o la peticion esta enviada";
 		}else{
+			//si no se habia enviado peticion, metemos la nueva peticion en la base de datos
 		String insert="insert into amigos values('"+this.getUsuario().getMail()+"', '"+amigo.getMail()+"', '"+false+"', '"
 				+System.currentTimeMillis()+"')";
 		BaseDeDatos.insertInto(insert);
 		return "Has enviado peticion";
 		}
 	}
+	//metodo para aceptar amigos
 	public void aceptarAmigo(Usuario amigo,int posicion){
 		boolean confirma=true;
+		//actualizamos en la base de datos (la peticion tendria la columna amigos en false, ahora estaria a true)
 		String actualizar="update amigos set "+""+ "confirmado ='"+confirma+"',"+ "fecha ='"+System.currentTimeMillis()+"'"
 				+ "where ((mail2 = '"+this.getUsuario().getMail()+"')&(mail1 = '"+amigo.getMail()+"'))";
 		BaseDeDatos.insertInto(actualizar);
+		//anyadimos el amigo al array de amigos
 		this.getUsuario().anyadirAmigo(amigo);
+		//se borra de las peticiones pendientes
 		this.peticionesPen.remove(posicion);
-		//HABRÍA QUE MIRAR SI ESTÁ CONECTADO EL AMIGO, SI ESTÁ CONECTADO DE SE LE AÑADE A LA LISTA
-		//SI NO, SE LE AÑADIRA CUANDO SE CONECTE
 	}
 	public void rechazarAmigo(Usuario amigo,int posicion){
-		String actualizar="delete from amigos where ((mail2 = '"+this.getUsuario().getMail()+"')&(mail1 = '"+amigo.getMail()+"'))";
-		 
+		//eliminamos de la base de datos esa fila y la peticion del array de peticiones
+		String actualizar="delete from amigos where ((mail2 = '"+this.getUsuario().getMail()+"')&(mail1 = '"+amigo.getMail()+"'))"; 
 		this.peticionesPen.remove(posicion);
 		BaseDeDatos.insertInto(actualizar);
 	}
@@ -163,6 +180,9 @@ public class Sesion {
 	 * @param pathFoto
 	 * @param form true si es para subir una foto normal, false si es para subir foto perfil
 	 * @return
+	 * este metodo permite que, si aun no esta creada, se cree la carpeta de cada usuario,
+	 * despues hace una "copia" de la imagen seleccionada en esta nueva carpeta,
+	 * es decir copiamos de la carpeta del usuario a la del servidor
 	 */
 	public String meterFoto(String titulo, String[]comentarios, String pathFoto,boolean form) {
 		// TODO Auto-generated method stub
@@ -191,6 +211,7 @@ public class Sesion {
 			e.printStackTrace();
 		}
 		Foto fotoF;
+		//para insertar las fotos en la base de datos
 		if(form){
 		fotoF=new Foto(titulo,comentarios,foto.getAbsolutePath(),usuario.getMail(),System.currentTimeMillis(),0);
 		}else{
@@ -268,12 +289,14 @@ public class Sesion {
 	public void setPeticionesPen(ArrayList<Usuario> peticionesPen) {
 		this.peticionesPen = peticionesPen;
 	}
+	//actualizamos la foto de perfil siempre que el path sea real
 	public void fotoPerfil(String pathFoto){
 		if(!pathFoto.equals(" ")){
 		usuario.setFotoPerfil(meterFoto(" ", new String[10], pathFoto,false));
 		BaseDeDatos.insertInto("update usuario set fotoPerfil='"+usuario.getFotoPerfil()+"' where mail='"+usuario.getMail()+"'");
 		}
 	}
+	//metodo para eliminar una foto, del array y de la base de datos
 	public void eliminarFoto(Foto foto,int posicion){
 		usuario.getFotos().remove(posicion);
 		String borrar="delete from foto where ((path = '"+foto.getPath()+"'))";

@@ -1,14 +1,18 @@
 package parteGUI;
+//tipica ventana de entrada a una pagina mail y contraseña, tambien se da la opcion para registrarse
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+
 import logicaPrograma.Inicio;
 import logicaPrograma.RegistroUsuario;
 import logicaPrograma.Sesion;
@@ -19,7 +23,7 @@ public class VentanaInicio extends JFrame {
 	protected Sesion sesion;
 	protected Inicio inicio;
 	private JTextField usuario;
-	private JTextField contrasenya;
+	private JPasswordField contrasenya;
 	private JButton entrar;
 	private JButton registrar;
 	private JLabel pelisBook=new JLabel("pelisBOOK");
@@ -32,7 +36,7 @@ public class VentanaInicio extends JFrame {
 		this.setTitle("PelisBook");
 		//this.getContentPane().setBackground(new Color(28,255,100));
 		usuario=new JTextField();
-		contrasenya=new JTextField();
+		contrasenya=new JPasswordField();
 		entrar=new JButton("ENTRAR");
 		registrar=new JButton("REGISTRAR");
 		JPanel panelCentral=new JPanel(new GridLayout(0,2));
@@ -63,6 +67,7 @@ public class VentanaInicio extends JFrame {
 				}
 			}
 		});
+		//se abre la ventana de registro
 		registrar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -81,6 +86,7 @@ public class VentanaInicio extends JFrame {
 	public void volverVentanaPrincipal(){
 		setVisible(true);
 	}
+	//subclase con la ventana de registro
 	class VentanaRegistrar extends JFrame{
 		boolean comprobarMail=true;
 		RegistroUsuario registro;
@@ -118,6 +124,7 @@ public class VentanaInicio extends JFrame {
 			panelCentral.setBackground(new Color(28,255,100));
 			panelCentral.add(panelInteractivo);
 			this.getContentPane().add(panelCentral);
+			//hilo ,comprueba cada segundo si el mail que ponemos ya esta utilizado o no
 			Thread hiloRegistro=new Thread(){
 				public void run(){
 					while(comprobarMail){

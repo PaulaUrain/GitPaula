@@ -18,7 +18,10 @@ import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import logicaPrograma.Sesion;
-
+/**
+ * ventana para subir fotos, tienes que introducir obligatoriamente una foto y el titulo para poder darle a aceptar
+ *el maximo numero de palabras prohibidas que puedes introducir es 10
+ */
 public class VentanaSubirFoto extends JFrame {
 	private Sesion sesion;
 	private JTextField tTituloFoto=new JTextField(" ");
@@ -66,16 +69,21 @@ public class VentanaSubirFoto extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				//boolean que indica si estan llenas o vacias las palabras prohibidas
 				boolean noR=false;
 				String[]comentarios=new String[10];
+				//si no has seleccionado ninguna foto te salta un dialog
 				if(pathFoto==null){
 					JOptionPane.showMessageDialog(panelCentral, "No has seleccionado una imagen, por favor selecciona");
 					return;
-				}				
+				}		
+				//si no has introducido un titulo para la foto te salta un dialog
 				if(tTituloFoto.getText().equals(" ")){
 					JOptionPane.showMessageDialog(panelCentral, "Introduzca un titulo para la foto");
 					return;
 				}
+				//comprobamos las palabras que hemos metido en los textfield y los metemos en un array de strings
+				//si hay alguna en blanco  cambiamos el boolean a true
 				for(int i=0;i<lPalabras.length;i++){
 					if(tPalabras[i].getText().equals(" ")){
 						noR=true;
@@ -84,6 +92,7 @@ public class VentanaSubirFoto extends JFrame {
 						comentarios[i]=tPalabras[i].getText();
 					}
 				}
+				//si alguna de las palabras esta vacia te salta un confirm de si quieres seguir sin rellenar
 				if(noR){
 					int returnVal= JOptionPane.showConfirmDialog(panelCentral, "Hay palabras prohibidas sin rellenar,¿quieres continuar?");
 					if(returnVal==JOptionPane.YES_OPTION){
@@ -114,6 +123,7 @@ public class VentanaSubirFoto extends JFrame {
 			}
 		});
 	}
+	//como en la foto de perfil, solo acepta JPEG
 	public void subirFoto() {
 		// TODO Auto-generated method stub
 		boolean cumple=false;

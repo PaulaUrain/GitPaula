@@ -67,11 +67,13 @@ public class VentanaPrincipal extends JFrame {
 		setVisible(true);
 		setSize(getToolkit().getScreenSize());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		//se pone nuestra foto de perfiñ
 		ponerFotoPerfil();
 		peticiones.setText("Peticiones pendientes "+sesion.getPeticionesPen().size());
 		listaFotos=new JList<Foto>(modeloFotos);
 		modeloListaRanking=new ModeloListaRanking(sesion.getUsuario().getAmigos());
 		ranking=new JList<Usuario>(modeloListaRanking);
+		//llamamos al metodo que recupera las fotos de los amigos
 		recuperarFoto();
 		panelCenter=new JScrollPane(listaFotos);
 		panelCenter.setPreferredSize(new Dimension((getWidth()/2),getHeight()));
@@ -107,6 +109,7 @@ public class VentanaPrincipal extends JFrame {
 		getContentPane().add(panelRight,BorderLayout.EAST);
 		getContentPane().add(panelLeft,BorderLayout.WEST);
 		getContentPane().add(panelCenter,BorderLayout.CENTER);
+		//abre la ventana de buscar amigos para enviar peticiones
 		buscarAmigos.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -114,6 +117,7 @@ public class VentanaPrincipal extends JFrame {
 				ventanaNueva=new VentanaBuscarAmigos();
 				}
 		});			
+		//peticiones pendientes que nos han llegado, abre ventana con las peticiones
 		peticiones.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -122,6 +126,7 @@ public class VentanaPrincipal extends JFrame {
 				ventanaPeticiones.setVisible(true);
 			}
 		});
+		//abre la ventana de la foto para poder participar en el juego
 		interactuarFoto.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -136,6 +141,7 @@ public class VentanaPrincipal extends JFrame {
 				}
 			}
 		});
+		//para subir una foto
 		subirFoto.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -143,6 +149,7 @@ public class VentanaPrincipal extends JFrame {
 				VentanaSubirFoto a=new VentanaSubirFoto(sesion);
 			}
 		});
+		// permite actualizar nuestra foto de perfil, llamando al metodo correspondiente
 		cambiarFotoPerfil.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -152,6 +159,7 @@ public class VentanaPrincipal extends JFrame {
 				
 			}
 		});
+		//boton que abre ventana para ver mis fotos, me permite ver todas mis fotos y borrar la que quiera
 		verMisFotos.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -165,6 +173,7 @@ public class VentanaPrincipal extends JFrame {
 				sigo=false; //para acabar el hilo que no es el de la ventana al cerrar la ventana
 			}
 		});
+		//si hace doble clik en el nombre del amigo te abre su pagina de perfil
 		ranking.addMouseListener( new MouseAdapter() {  
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -175,6 +184,8 @@ public class VentanaPrincipal extends JFrame {
 			}
 		});
 		Thread hilo=new Thread(){
+			//con el hilo refrescamos cada minuto distintas partes que van actualizando los usuarios
+			//las posiciones del ranking, los amigos nuevos, las peticiones, las fotos que van subiendo...
 			public void run(){
 			//metodo que quiero que haga el hilo, es para que un metodo se ejecute a través de otro hilo y no afecte al hilo principal
 			while(sigo){
@@ -196,6 +207,7 @@ public class VentanaPrincipal extends JFrame {
 			}
 		};
 		hilo.start();
+		//renderer para que en el ranking salga el amigo seleccionado en verde y su foto de perfil
 		ranking.setCellRenderer(new DefaultListCellRenderer(){ //Objeto default list con metodo sobreescrito
 			@Override
 			public Component getListCellRendererComponent(JList<?>list, Object value, int index,boolean isSelected,boolean cellHasFocus){
@@ -216,6 +228,7 @@ public class VentanaPrincipal extends JFrame {
 				return panelRanking;
 			}
 			});
+		//renderer de las fotos, en rojo la seleccionada
 		listaFotos.setCellRenderer(new DefaultListCellRenderer(){ //Objeto default list con metodo sobreescrito
 			@Override
 			public Component getListCellRendererComponent(JList<?>list, Object value, int index,boolean isSelected,boolean cellHasFocus){
@@ -240,7 +253,7 @@ public class VentanaPrincipal extends JFrame {
 					panelCentral.setBackground(Color.red);
 					}
 				for(int i=0;i<((Foto)value).getComentarios().size();i++){				
-					//comentarios.addElement(((Foto)value).getComentarios().get(i).getUsuario().getMail()+" dice: "+((Foto)value).getComentarios().get(i).comentarioFoto);
+					comentarios.addElement(((Foto)value).getComentarios().get(i).getUsuario().getMail()+" dice: "+((Foto)value).getComentarios().get(i).comentarioFoto);
 				}	
 				JLabel mailUsuario=(new JLabel(((Foto)value).getEmailUsuario()));
 				mailUsuario.setFont(new Font(mailUsuario.getFont().getFontName(),mailUsuario.getFont().getStyle(),20));
@@ -253,14 +266,16 @@ public class VentanaPrincipal extends JFrame {
 				panelPrincipal.add(panelComentarios,BorderLayout.SOUTH);
 				return panelPrincipal;
 			}
-			});
+		});
 	}
+	//metodo que refresca la foto de perfil (metodo de clase sesion)
 	public void ponerFotoPerfil(){
 		ImageIcon a1=new ImageIcon(sesion.getUsuario().getFotoPerfil());
 		a1= new ImageIcon(a1.getImage().getScaledInstance(getWidth()/4,getHeight()/4, Image.SCALE_DEFAULT));
 		fotoPerfil.setIcon(a1);		
 		repaint();
 	}
+	//cuando clickamos en subir foto perfil escogemos una imagen desde archivo; solo JPEG
 	public String subirFotoPerfil() {
 		// TODO Auto-generated method stub
 		boolean cumple=false;
@@ -290,10 +305,17 @@ public class VentanaPrincipal extends JFrame {
 	 * con el metodo sesion.recuperarFotos()
 	 * @param fechaRecupera podemos 
 	 */
+	/**
+	 * recuperamos las fotos de los amigos al principio y cada vez que refresquemos la pantalla
+	 */
 	public void recuperarFoto() {
 		modeloFotos.paraPrueba = sesion.getFotosAmigos();
 		modeloFotos.avisarAnyadido(0);
 	}
+	/**
+	 * ventana de las peticiones de los amigos, aparecen los amigos en una jlist. podemos aceptar o rechazar al
+	 * seleccionado
+	 */
 	public class VentanaPeticiones extends JFrame {
 		JList<Usuario> usuariosPeticiones;
 		JButton rechazar = new JButton("Rechazar");
@@ -314,7 +336,7 @@ public class VentanaPrincipal extends JFrame {
 			botonera.setBackground(new Color(0,0,255));
 			getContentPane().setBackground(new Color(28,255,10));
 			usuariosPeticiones.setBackground(new Color(28,255,10));	
-			
+			//si aceptamos anyadimos el amigo al array de amigos del usuario de la sesion actual 
 			aceptar.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -329,6 +351,7 @@ public class VentanaPrincipal extends JFrame {
 					repaint();
 				}
 			});
+			//sliminamos la peticion, desaparece del array de peticiones
 			rechazar.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -343,6 +366,7 @@ public class VentanaPrincipal extends JFrame {
 					repaint();
 				}
 			});
+			//seleccionado sale en rojo
 			usuariosPeticiones.setCellRenderer(new DefaultListCellRenderer() { 
 						@Override
 						public Component getListCellRendererComponent(JList<?> list, Object value, int index,boolean isSelected, boolean cellHasFocus) {
@@ -371,8 +395,8 @@ public class VentanaPrincipal extends JFrame {
 	}
 	/**
 	 * Clase para crear la ventana de Buscar amigos, contiene el
-	 * modeloListaAmigos
-	 * 
+	 * modeloListaAmigos, un jtextfield en el que hay que escribir el mail del amigo en cuestion para que aparezca
+	 * si ya has enviado la peticion, o ya son amigos no te deja enviar de nuevo
 	 * @author Alumno
 	 *
 	 */
@@ -448,6 +472,11 @@ public class VentanaPrincipal extends JFrame {
 			getContentPane().add(botonera, BorderLayout.NORTH);
 		}
 	}
+	/**
+	 * Clase para ver mis fotos aparecen en una jlist, la foto seleccionada sale en rojo
+	 * si clickas dos veces en la imagen te da la opcion de eliminarla 
+	 *
+	 */
 	public class VentanaMisFotos extends JFrame {
 		JScrollPane panelFotos;
 		public VentanaMisFotos(){
@@ -499,6 +528,7 @@ public class VentanaPrincipal extends JFrame {
 			});
 		}
 	}
+	//modelo para la lista de amigos
 	public class ModeloListaAmigos implements ListModel<Usuario> {
 		ArrayList<Usuario> paraPrueba;
 		ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>();
@@ -559,6 +589,7 @@ public class VentanaPrincipal extends JFrame {
 			}
 		}
 	}
+	//modelo utilizado para la lista de peticiones
 	public class ModeloListaPeticiones implements ListModel<Usuario> {
 		ArrayList<Usuario> paraPrueba;
 		ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>();
@@ -624,6 +655,7 @@ public class VentanaPrincipal extends JFrame {
 			}
 		}
 	}
+	//modelo utilizado para el ranking de puntuaciones
 	public class ModeloListaRanking implements ListModel<Usuario> {
 		ArrayList<Usuario> paraPrueba;
 		ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>();

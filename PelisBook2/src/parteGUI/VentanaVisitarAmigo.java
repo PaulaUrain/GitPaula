@@ -21,7 +21,10 @@ import javax.swing.JScrollPane;
 import logicaPrograma.Foto;
 import logicaPrograma.Sesion;
 import logicaPrograma.Usuario;
-
+/**
+ * Ventana de perfil del amigo, podemos ver sus fotos e interactuar con ellas
+ *en ella tambien vemos su foto de perfil
+ */
 public class VentanaVisitarAmigo extends JFrame {
 	private JList<Foto> listaFotos;
 	private ModeloPanelFotos modeloFotos = new ModeloPanelFotos();
@@ -82,7 +85,7 @@ public class VentanaVisitarAmigo extends JFrame {
 				fotoL.setIcon(foto);
 				fotoL.setPreferredSize(new Dimension(300,300));
 				for(int i=0;i<((Foto)value).getComentarios().size();i++){
-					//comentarios.addElement(((Foto)value).getComentarios().get(i).getUsuario().getMail()+" dice: "+((Foto)value).getComentarios().get(i).comentarioFoto);
+					comentarios.addElement(((Foto)value).getComentarios().get(i).getUsuario().getMail()+" dice: "+((Foto)value).getComentarios().get(i).comentarioFoto);
 				}	
 				panelP.setBackground(new Color(28,255,10));
 				getContentPane().setBackground(new Color(28,255,10));

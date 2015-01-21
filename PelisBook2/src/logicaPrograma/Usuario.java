@@ -139,13 +139,12 @@ private ArrayList <IntentoFoto> intentos=new ArrayList<IntentoFoto>();
 	public ArrayList <IntentoFoto> getIntentos() {
 		return intentos;
 	}
+	//actualizamos el numero de intentos que ha hecho un usuario para una foto
 	public void setIntentos(ArrayList <IntentoFoto> intentos) {
 		this.intentos = intentos;
 		acertadas=0;
-		System.out.println(intentos.size());
 		for(int i=0;i<intentos.size();i++){
 			if(intentos.get(i).isAdivinado()){
-				System.out.println("entra");
 				acertadas++;
 			}
 		}

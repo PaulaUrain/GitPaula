@@ -2,7 +2,7 @@ package logicaPrograma;
 import javax.swing.JFrame;
 
 import parteGUI.DatosErroneos;
-
+//primeras pruebas
 
 public class Inicio{
 	ConexionBaseDeDatos a =new ConexionBaseDeDatos();

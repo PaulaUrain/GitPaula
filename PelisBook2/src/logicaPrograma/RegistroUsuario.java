@@ -10,9 +10,10 @@ public class RegistroUsuario extends JFrame {
 		this.setExiste(false);
 	}
 	public void comprobarExistencia(String nuevoUsuario){
+	//	comprobamos si existe un usuario, mirando en la base de datos
 		if(a.existeUsuario(nuevoUsuario)){
 			setExiste(true);
-			//System.out.println("Usuario Cogido"); //aparecerá el mail en rojo
+			
 		}else{
 			setExiste(false);
 		}
